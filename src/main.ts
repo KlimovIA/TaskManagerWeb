@@ -1,3 +1,4 @@
+import './styles/main.css';
 import { Stage, Task, Project, TaskItem, Note, HistoryEntry, HistoryOperationType, BoardState, CardType } from './types/models';
 import { boardService } from './storage/boardService';
 import { StageRenderer } from './ui/stageRenderer';
