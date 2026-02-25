@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kanban-доска</title>
+  <script type="module" crossorigin src="/assets/index-CqeXGIj5.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CBiPI-AQ.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <h1 id="app-title">Проекты</h1>
+      <button id="add-project-btn" class="btn btn-primary hidden">+ Добавить проект</button>
+    </header>
+
+    <!-- Список проектов -->
+    <main id="projects-view" class="view-container">
+      <div id="projects-list" class="projects-list"></div>
+    </main>
+
+    <!-- Список задач проекта -->
+    <main id="task-list-view" class="view-container hidden">
+      <div id="task-list-container" class="task-list-container"></div>
+    </main>
+
+    <!-- Канбан-доска задачи -->
+    <main id="board-view" class="view-container hidden">
+      <div class="board-view-header">
+        <button class="btn btn-secondary" id="back-to-tasks-btn">← Назад к задачам</button>
+        <h2 id="board-task-title" class="board-task-title"></h2>
+        <button id="add-stage-btn" class="btn btn-primary">+ Добавить этап</button>
+      </div>
+      <div id="board" class="board"></div>
+    </main>
+    
+    <aside id="task-panel" class="task-panel hidden">
+      <div class="task-panel-header">
+        <h2 id="task-panel-title">Настройки задачи</h2>
+        <button id="close-panel-btn" class="btn btn-icon">&times;</button>
+      </div>
+      <div class="task-panel-content">
+        <div class="form-group">
+          <label for="task-title">Название задачи</label>
+          <input type="text" id="task-title" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label for="task-stage">Этап</label>
+          <select id="task-stage" class="form-control"></select>
+        </div>
+        
+        <div class="form-group">
+          <label for="task-description">Описание</label>
+          <textarea id="task-description" class="form-control" rows="4"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Заметки по задаче</label>
+          <div id="notes-list" class="notes-list"></div>
+          <button id="add-note-btn" class="btn btn-primary" style="margin-top: 0.75rem; width: 100%;">+ Добавить заметку</button>
+        </div>
+        
+        <div class="form-group">
+          <button id="view-history-btn" class="btn btn-secondary">📜 История операций</button>
+        </div>
+
+        <div class="form-group">
+          <button id="delete-task-btn" class="btn btn-danger">Удалить задачу</button>
+        </div>
+      </div>
+    </aside>
+    
+    <div id="history-panel" class="history-panel hidden">
+      <div class="history-panel-header">
+        <h3>История операций</h3>
+        <div class="history-panel-actions">
+          <button id="clear-history-btn" class="btn btn-secondary btn-sm" title="Очистить историю">🗑️ Очистить</button>
+          <button id="close-history-btn" class="btn btn-icon">&times;</button>
+        </div>
+      </div>
+      <div id="history-list" class="history-list"></div>
+    </div>
+  </div>
+  
+  <!-- Модальное окно для создания/редактирования этапа -->
+  <div id="stage-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2 id="stage-modal-title">Новый этап</h2>
+      <div class="form-group">
+        <label for="stage-name">Название этапа</label>
+        <input type="text" id="stage-name" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="stage-color">Цвет этапа</label>
+        <input type="color" id="stage-color" class="form-control" value="#4a90d9">
+      </div>
+      <div class="modal-actions">
+        <button id="save-stage-btn" class="btn btn-primary">Сохранить</button>
+        <button id="cancel-stage-btn" class="btn btn-secondary">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно для просмотра/редактирования заметки -->
+  <div id="note-modal" class="modal hidden">
+    <div class="modal-content modal-content-large">
+      <h2 id="note-modal-title">Заметка</h2>
+      <div class="form-group">
+        <label for="note-title-input">Заголовок</label>
+        <input type="text" id="note-title-input" class="form-control" placeholder="Введите заголовок заметки...">
+      </div>
+      <div class="form-group">
+        <label for="note-content-input">Содержание</label>
+        <textarea id="note-content-input" class="form-control" rows="10" placeholder="Введите содержание заметки..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button id="save-note-btn" class="btn btn-primary">Сохранить</button>
+        <button id="cancel-note-btn" class="btn btn-secondary">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно для проекта -->
+  <div id="project-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2 id="project-modal-title">Новый проект</h2>
+      <div class="form-group">
+        <label for="project-name">Название проекта</label>
+        <input type="text" id="project-name" class="form-control" placeholder="Введите название проекта...">
+      </div>
+      <div class="form-group">
+        <label for="project-description">Описание</label>
+        <textarea id="project-description" class="form-control" rows="4" placeholder="Введите описание проекта..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button id="save-project-btn" class="btn btn-primary">Сохранить</button>
+        <button id="cancel-project-btn" class="btn btn-secondary">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно для задачи проекта -->
+  <div id="task-item-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2 id="task-item-modal-title">Новая задача</h2>
+      <div class="form-group">
+        <label for="task-item-title">Название задачи</label>
+        <input type="text" id="task-item-title" class="form-control" placeholder="Введите название задачи...">
+      </div>
+      <div class="form-group">
+        <label for="task-item-description">Описание</label>
+        <textarea id="task-item-description" class="form-control" rows="4" placeholder="Введите описание задачи..."></textarea>
+      </div>
+      <div class="form-group">
+        <label for="task-item-status">Статус</label>
+        <select id="task-item-status" class="form-control">
+          <option value="active">Ждёт выполнения</option>
+          <option value="revision">На доработке</option>
+          <option value="completed">Завершено</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button id="save-task-item-btn" class="btn btn-primary">Сохранить</button>
+        <button id="cancel-task-item-btn" class="btn btn-secondary">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно для создания карточки -->
+  <div id="card-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2 id="card-modal-title">Новая подзадача</h2>
+      <div class="form-group">
+        <label for="card-title">Название</label>
+        <input type="text" id="card-title" class="form-control" placeholder="Введите название...">
+      </div>
+      <div class="form-group">
+        <label>Группы подзадач</label>
+        <div class="card-types-selector">
+          <div class="card-type-tile" data-type="feature">
+            <span class="card-type-tile-label">Добавление функционала</span>
+          </div>
+          <div class="card-type-tile" data-type="bug">
+            <span class="card-type-tile-label">Баг</span>
+          </div>
+          <div class="card-type-tile" data-type="enhancement">
+            <span class="card-type-tile-label">Улучшение</span>
+          </div>
+          <div class="card-type-tile" data-type="docs">
+            <span class="card-type-tile-label">Документация</span>
+          </div>
+          <div class="card-type-tile" data-type="refactor">
+            <span class="card-type-tile-label">Рефакторинг</span>
+          </div>
+          <div class="card-type-tile" data-type="test">
+            <span class="card-type-tile-label">Тесты</span>
+          </div>
+          <div class="card-type-tile" data-type="ci">
+            <span class="card-type-tile-label">CI/CD</span>
+          </div>
+          <div class="card-type-tile" data-type="security">
+            <span class="card-type-tile-label">Безопасность</span>
+          </div>
+          <div class="card-type-tile" data-type="performance">
+            <span class="card-type-tile-label">Производительность</span>
+          </div>
+          <div class="card-type-tile" data-type="design">
+            <span class="card-type-tile-label">Дизайн</span>
+          </div>
+          <div class="card-type-tile" data-type="translation">
+            <span class="card-type-tile-label">Перевод</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="save-card-btn" class="btn btn-primary">Создать</button>
+        <button id="cancel-card-btn" class="btn btn-secondary">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
